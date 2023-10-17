@@ -1,18 +1,19 @@
 import 'dart:convert';
-
 import 'package:face_recognition_ios_and_android/faceDetector/FaceDetectorPage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-
-
-
+import 'package:face_recognition_ios_and_android/shared_preference/FRSharedPreferences.dart';
+import 'package:logger/logger.dart';
 class Login_Page extends StatelessWidget {
   @override
-
   TextEditingController employeeIDController = TextEditingController();
   TextEditingController userPasswordController = TextEditingController();
   Widget build(BuildContext context) {
+
+    var logger = Logger();
+
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Login Page'),
@@ -58,8 +59,8 @@ class Login_Page extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
                     TextButton(
-                      onPressed: () {
-
+                      onPressed: ()
+                      {
                       },
                       child: Text('Forgot Password?'),
                     ),
@@ -77,12 +78,13 @@ class Login_Page extends StatelessWidget {
                       showToast("Please Enter Your Password");
                     } else {
 
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const FaceDetectorPage(),
-                        ),
-                      );
+                      loginUser(eID,password,context);
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => const FaceDetectorPage(),
+                      //   ),
+                      // );
 
                       // Implement your login logic here
                       // You can use the http package for making network requests
@@ -119,21 +121,18 @@ class Login_Page extends StatelessWidget {
     );
   }
 
-  Future<void> loginUser(String e_ID, String pass) async {
-    final String loginURL = "https://frapi.apil.online/employee_permission/login";
+  Future<void> loginUser(String e_ID, String pass, BuildContext context) async {
+    const String loginURL = "https://frapi.apil.online/employee_permission/login";
     final Map<String, String> data = {
       'E_ID': e_ID,
       'password': pass,
     };
 
+
     //final customDialog = showLoadingDialog(); // You'll need to implement this function
 
     try {
-      final response = await http.post(
-        Uri.parse(loginURL),
-        body: jsonEncode(data),
-        headers: {'Content-Type': 'application/json'},
-      );
+      final response = await http.post(Uri.parse(loginURL), body: jsonEncode(data), headers: {'Content-Type': 'application/json'},);
 
 
       if (response.statusCode == 200) {
@@ -143,6 +142,8 @@ class Login_Page extends StatelessWidget {
           final String token = jsonObject['token'];
           final List<dynamic> dataArray = jsonObject['data'];
 
+
+
           if (dataArray.isNotEmpty) {
             final Map<String, dynamic> dataObject = dataArray[0];
             final String eId = dataObject['Employee_ID'];
@@ -150,19 +151,35 @@ class Login_Page extends StatelessWidget {
             showToast("$eId\n$name"); // Implement your showToast function
             print("onResponse token: $token");
 
+
             // You can add your shared preferences logic here
-            // FR_sharedpreference.Companion.RemoveToken(LoginActivity.this);
-            // FR_sharedpreference.Companion.RemoveE_ID(LoginActivity.this);
-            // FR_sharedpreference.Companion.setLoginE_ID(LoginActivity.this, e_ID);
-            // FR_sharedpreference.Companion.setLoginToken(LoginActivity.this, token);
+
+            // Assuming you are calling these methods inside a Flutter widget or somewhere in your Dart code.
+            String getToken= FRSharedPreferences.getLoginToken() as String;
+
+            if(getToken.isNotEmpty)
+             {
+               FRSharedPreferences.removeToken();
+             }
+           else
+             {
+               FRSharedPreferences.setLoginToken(token);
+
+             }
 
             if (jsonObject.containsKey('allowed_locations')) {
               final allowedLocationsArray = jsonObject['allowed_locations'];
-              final jsonArrayString = jsonEncode(allowedLocationsArray);
-              // Implement your shared preferences logic for allowed locations
 
-              // Navigate to the next screen
-              // Use Navigator.push or similar for navigation
+              final jsonArrayString = jsonEncode(allowedLocationsArray);
+              FRSharedPreferences.setAllowedLocations(jsonArrayString);
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const FaceDetectorPage(),
+                ),
+              );
+
             }
           } else {
             showToast("Wrong userName or Password"); // Implement your showToast function
