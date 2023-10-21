@@ -36,9 +36,9 @@ dependencies:
   path_provider: ^2.0.11
   cupertino_icons: ^1.0.2
   fluttertoast: ^8.2.2
-
   shared_preferences: ^2.0.8
   logger: ^2.0.2+1
+  connectivity_plus: ^5.0.1
 
 dev_dependencies:
   flutter_test:
