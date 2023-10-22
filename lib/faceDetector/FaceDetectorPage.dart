@@ -1,7 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
-
 import '../util/face_detector_painter.dart';
 import 'CameraView.dart';
 
@@ -44,7 +43,6 @@ class _FaceDetectorPageState extends State<FaceDetectorPage> {
       initialDirection: CameraLensDirection.front,
     );
   }
-
   Future<void> processImage(final InputImage inputImage) async {
     if (!_canProcess) return;
     if (_isBusy) return;
@@ -60,7 +58,8 @@ class _FaceDetectorPageState extends State<FaceDetectorPage> {
           inputImage.inputImageData!.size,
           inputImage.inputImageData!.imageRotation);
       _customPaint = CustomPaint(painter: painter);
-    } else {
+    }
+    else {
       String text = 'face found ${faces.length}\n\n';
       for (final face in faces) {
         text += 'face ${face.boundingBox}\n\n';

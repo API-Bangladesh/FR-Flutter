@@ -93,9 +93,7 @@ class _CameraViewState extends State<CameraView> {
       allBytes.putUint8List(plane.bytes);
     }
     final bytes = allBytes.done().buffer.asUint8List();
-    final Size imageSize = Size(
-      image.width.toDouble(),
-      image.height.toDouble(),
+    final Size imageSize = Size(image.width.toDouble(), image.height.toDouble(),
     );
     final camera = cameras[_cameraIndex];
     final imageRotation =

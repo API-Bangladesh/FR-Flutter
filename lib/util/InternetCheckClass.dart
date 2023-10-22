@@ -14,7 +14,6 @@ class InternetCheckClass {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
-
           return AlertDialog(
             title: Text('No Internet Connection'),
             content: Text('Please turn on the Internet connection to continue'),

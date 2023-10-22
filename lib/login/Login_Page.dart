@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:face_recognition_ios_and_android/shared_preference/FRSharedPreferences.dart';
-
 import '../faceDetector/FaceDetectorPage.dart';
+import 'package:face_recognition_ios_and_android/Internet_Connection/Connection_Checker.dart';
+
 
 class Login_Page extends StatefulWidget {
   @override
@@ -13,28 +14,44 @@ class Login_Page extends StatefulWidget {
 }
 
 class _Login_PageState extends State<Login_Page> {
+  Connection_Checker connectionChecker = Connection_Checker();
   TextEditingController employeeIDController = TextEditingController();
   TextEditingController userPasswordController = TextEditingController();
 
   @override
-  Future<void> initState() async {
+  void initState() {
     super.initState();
-
-    bool isConnected =  InternetCheckClass.isNetworkConnected() as bool;
-    if (isConnected) {
+    Future.delayed(Duration.zero, () {
       checkAndAutoLogin();
-    } else {
-      InternetCheckClass.openInternetDialog(context);
-    }
-
+    });
   }
+
+  // @override
+  // Future<void> initState() async {
+  //   super.initState();
+  //
+  //   bool isConnected =  InternetCheckClass.isNetworkConnected() as bool;
+  //   if (isConnected) {
+  //     checkAndAutoLogin();
+  //   } else {
+  //     InternetCheckClass.openInternetDialog(context);
+  //   }
+  //
+  // }
 
   void checkAndAutoLogin() async {
     final String? token = await FRSharedPreferences.getLoginToken();
     if (token != null) {
+      showToast(token);
+
       // Token exists, automatically log in
       navigateToFaceDetectorPage();
     }
+    else
+      {
+        showToast(token!);
+
+      }
   }
 
   void navigateToFaceDetectorPage() {
