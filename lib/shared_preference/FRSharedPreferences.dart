@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FRSharedPreferences {
@@ -76,22 +77,21 @@ class FRSharedPreferences {
     await prefs.remove('name');
   }
 
-  static Future<void> setRememberData(String? name, String? pass) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('username', name ?? '');
-    await prefs.setString('password', pass ?? '');
+  static Future<void> setRememberData(BuildContext context, String id) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setString("userID", id);
   }
+
 
   static Future<String?> getRememberData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('username') ?? '';
+    return prefs.getString("userID") ?? '';
   }
 
   static Future<void> removeRememberData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('username');
-    await prefs.remove('password');
-    await prefs.setBool('rememberMe', false);
+    await prefs.remove("userID");
+
   }
 
   static Future<void> setCheckRememberData(bool checkData) async {

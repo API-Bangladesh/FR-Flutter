@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:face_recognition_ios_and_android/login/Login_Page.dart';
 
 List<CameraDescription> cameras = [];
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   cameras = await availableCameras();
   runApp(const MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -22,7 +22,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Login_Page(),
+      home:  Login_Page(),
     );
   }
 }
+
