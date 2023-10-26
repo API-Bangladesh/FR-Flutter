@@ -8,22 +8,23 @@ void main() async {
   cameras = await availableCameras();
   runApp(const MyApp());
 }
-
-
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+
+
+
     return MaterialApp(
       title: 'Face Detection',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue,),
       home:  Login_Page(),
+
+
     );
+
   }
 }
 

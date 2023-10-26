@@ -5,7 +5,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:face_recognition_ios_and_android/shared_preference/FRSharedPreferences.dart';
 import '../CustomLoading/CustomDialog.dart';
-import '../CustomLoading/CustomLoading.dart';
 import '../faceDetector/FaceDetectorPage.dart';
 import 'package:face_recognition_ios_and_android/Internet_Connection/Connection_Checker.dart';
 
@@ -31,7 +30,6 @@ class _Login_PageState extends State<Login_Page> {
 
     });
   }
-
   void checkAndAutoLogin() async {
     final String? token = await FRSharedPreferences.getLoginToken();
     if (token != null) {
@@ -40,7 +38,7 @@ class _Login_PageState extends State<Login_Page> {
 
       // Token exists, automatically log in
       checkTokenData();
-      //navigateToFaceDetectorPage();
+      navigateToFaceDetectorPage();
     }
     else
       {
@@ -99,12 +97,7 @@ class _Login_PageState extends State<Login_Page> {
           bool access = jsonObject['Access'] ?? false;
           if (access) {
             // Navigate to a new screen
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => FaceDetectorPage(),
-              ),
-            );
+            navigateToFaceDetectorPage();
           }
         }
       } else {
@@ -155,10 +148,11 @@ class _Login_PageState extends State<Login_Page> {
 
           if (jsonObject.containsKey('allowed_locations')) {
             final allowedLocationsArray = jsonObject['allowed_locations'];
-
             final jsonArrayString = jsonEncode(allowedLocationsArray);
             FRSharedPreferences.setAllowedLocations(jsonArrayString);
+            showToast(jsonArrayString );
             navigateToFaceDetectorPage();
+
           } else {
             showToast("allowed_location is null");
           }
@@ -320,6 +314,8 @@ class _Login_PageState extends State<Login_Page> {
       ),
     );
   }
+
 }
+
 
 
