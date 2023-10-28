@@ -5,14 +5,15 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:face_recognition_ios_and_android/shared_preference/FRSharedPreferences.dart';
 import '../CustomLoading/CustomDialog.dart';
+import '../Internet_Connection/Connection_Checker.dart';
 import 'package:face_recognition_ios_and_android/faceDetector/FaceDetectorPage.dart';
-import 'package:face_recognition_ios_and_android/Internet_Connection/Connection_Checker.dart';
-class Login_Page extends StatefulWidget {
+
+class LoginPage extends StatefulWidget {
   @override
   _Login_PageState createState() => _Login_PageState();
 }
 
-class _Login_PageState extends State<Login_Page> {
+class _Login_PageState extends State<LoginPage> {
   Connection_Checker connectionChecker = Connection_Checker();
   TextEditingController employeeIDController = TextEditingController();
   TextEditingController userPasswordController = TextEditingController();
@@ -24,19 +25,7 @@ class _Login_PageState extends State<Login_Page> {
     super.initState();
     customDialog = CustomDialog(context);
     loadValueRememberData();
-    checkAndAutoLogin();;
-  }
-  void checkAndAutoLogin() async {
-    bool isConnected = await InternetCheckClass.isNetworkConnected();
-    final String? token = await FRSharedPreferences.getLoginToken();
-    if (isConnected) {
-      if (token != "") {
-        checkTokenData();
-      }
-    }
-    else {
-      InternetCheckClass.openInternetDialog(context);
-    }
+    checkAndAutoLogin();
   }
 
   void loadValueRememberData() async {
@@ -53,6 +42,20 @@ class _Login_PageState extends State<Login_Page> {
       });
     }
   }
+
+  void checkAndAutoLogin() async {
+    bool isConnected = await InternetCheckClass.isNetworkConnected();
+    final String? token = await FRSharedPreferences.getLoginToken();
+    if (isConnected) {
+      if (token != "") {
+        checkTokenData();
+      }
+    }
+    else {
+      InternetCheckClass.openInternetDialog(context);
+    }
+  }
+
   void navigateToFaceDetectorPage() {
     print("Navigating to FaceDetectorPage");
     customDialog.dismiss();
@@ -63,6 +66,7 @@ class _Login_PageState extends State<Login_Page> {
       ),
     );
   }
+
   void checkTokenData() async {
     // Display a loading dialog
     customDialog.startLoading("Please wait...");
@@ -107,8 +111,9 @@ class _Login_PageState extends State<Login_Page> {
       customDialog.dismiss();
     }
   }
+
+
   void loginUser(String e_ID, String pass) async {
-    customDialog.startLoading("Please Wait....");
     const String loginURL = "https://frapi.apil.online/employee_permission/login";
     final Map<String, String> data = {
       'E_ID': e_ID,
@@ -116,11 +121,9 @@ class _Login_PageState extends State<Login_Page> {
     };
 
     try {
-      final response = await http.post(
-        Uri.parse(loginURL),
-        body: jsonEncode(data),
-        headers: {'Content-Type': 'application/json'},
-      );
+      final response = await http.post(Uri.parse(loginURL),
+          body: jsonEncode(data),
+          headers: {'Content-Type': 'application/json'});
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonObject = jsonDecode(response.body);
@@ -133,25 +136,23 @@ class _Login_PageState extends State<Login_Page> {
 
           if (jsonObject.containsKey('allowed_locations')) {
             final allowedLocationsArray = jsonObject['allowed_locations'];
+
             final jsonArrayString = jsonEncode(allowedLocationsArray);
             FRSharedPreferences.setAllowedLocations(jsonArrayString);
-            showToast(jsonArrayString);
+
             navigateToFaceDetectorPage();
           } else {
-            showToast("allowed_location is null");
+            showToast("allowed_location is  null");
           }
         } else {
-          showToast("Wrong username or password");
+          showToast("Wrong userName or Password");
         }
       } else {
-        showToast("Wrong username or password");
+        showToast("Wrong userName or Password");
       }
     } catch (error) {
-      customDialog.dismiss();
       print("Status Code: $error");
       showToast("Error Catch: $error");
-    } finally {
-      customDialog.dismiss();
     }
   }
 
@@ -219,7 +220,8 @@ class _Login_PageState extends State<Login_Page> {
                         Container(
                           decoration: BoxDecoration(
                             border: Border.all(
-                              color: rememberMe ? Colors.green : Colors.orangeAccent,
+                              color: rememberMe ? Colors.green : Colors
+                                  .orangeAccent,
                               width: 1.0,
                             ),
                             borderRadius: BorderRadius.circular(5.0),
@@ -231,14 +233,16 @@ class _Login_PageState extends State<Login_Page> {
                                 rememberMe = value!;
                               });
                               if (value!) {
-                                String rememberDataFromET = employeeIDController.text.trim();
+                                String rememberDataFromET = employeeIDController
+                                    .text.trim();
                                 if (rememberDataFromET.isEmpty) {
                                   showToast("Please Enter your user ID");
                                   setState(() {
                                     rememberMe = false;
                                   });
                                 } else {
-                                  FRSharedPreferences.setRememberData(context, rememberDataFromET);
+                                  FRSharedPreferences.setRememberData(
+                                      context, rememberDataFromET);
                                   showToast("Value saved");
                                 }
                               } else {
@@ -252,7 +256,8 @@ class _Login_PageState extends State<Login_Page> {
                         const Text('Remember Me'),
                       ],
                     ),
-                    SizedBox(width: 20), // Add space between "Remember Me" and "Forgot Password?"
+                    SizedBox(width: 20),
+                    // Add space between "Remember Me" and "Forgot Password?"
                     TextButton(
                       onPressed: () {
                         // Implement your forgot password logic
@@ -273,7 +278,8 @@ class _Login_PageState extends State<Login_Page> {
                     } else if (password.isEmpty) {
                       showToast("Please Enter Your Password");
                     } else {
-                      bool isConnected = await InternetCheckClass.isNetworkConnected();
+                      bool isConnected = await InternetCheckClass
+                          .isNetworkConnected();
                       if (isConnected) {
                         loginUser(eID, password);
                       } else {
@@ -301,3 +307,4 @@ class _Login_PageState extends State<Login_Page> {
     );
   }
 }
+
